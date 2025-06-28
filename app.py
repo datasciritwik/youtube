@@ -1,7 +1,9 @@
 import streamlit as st
 import os
-from main import combine_video_with_audio_control
+import subprocess
 import tempfile
+import urllib.parse
+from main import combine_video_with_audio_control
 
 st.set_page_config(page_title="Video + Audio Combiner", layout="centered")
 st.title("Batch Video + Background Audio Combiner")
@@ -12,6 +14,98 @@ if 'processed_videos' not in st.session_state:
 
 if 'processing_complete' not in st.session_state:
     st.session_state.processing_complete = False
+
+def download_file_with_wget(url, output_path=None):
+    """
+    Download a file using wget via subprocess
+    
+    Args:
+        url (str): URL of the file to download
+        output_path (str, optional): Path where to save the file
+    
+    Returns:
+        tuple: (success: bool, file_path: str, error_message: str)
+    """
+    try:
+        # Create temp directory if no output path specified
+        if output_path is None:
+            # Extract filename from URL
+            parsed_url = urllib.parse.urlparse(url)
+            filename = os.path.basename(parsed_url.path)
+            if not filename or '.' not in filename:
+                filename = "downloaded_file"
+            
+            # Create temp file
+            temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=f"_{filename}")
+            output_path = temp_file.name
+            temp_file.close()
+        
+        # Build wget command
+        wget_cmd = [
+            'wget',
+            '--no-check-certificate',  # Skip SSL certificate verification if needed
+            '--timeout=30',             # Set timeout
+            '--tries=3',                # Number of retries
+            '-O', output_path,          # Output file
+            url
+        ]
+        
+        # Execute wget command
+        result = subprocess.run(
+            wget_cmd,
+            capture_output=True,
+            text=True,
+            timeout=120  # 2 minute timeout
+        )
+        
+        if result.returncode == 0:
+            return True, output_path, ""
+        else:
+            return False, None, result.stderr
+            
+    except subprocess.TimeoutExpired:
+        return False, None, "Download timeout - file may be too large or connection too slow"
+    except FileNotFoundError:
+        return False, None, "wget command not found. Please install wget on your system."
+    except Exception as e:
+        return False, None, f"Download error: {str(e)}"
+
+# Add URL input section
+st.header("Download Files from URLs")
+with st.expander("Download videos/audio from URLs using wget"):
+    url_input = st.text_area(
+        "Enter URLs (one per line)",
+        placeholder="https://example.com/video.mp4\nhttps://example.com/audio.mp3",
+        help="Enter one URL per line. Supports any file type that wget can download."
+    )
+    
+    download_button = st.button("Download Files", type="secondary")
+    
+    if download_button and url_input.strip():
+        urls = [url.strip() for url in url_input.strip().split('\n') if url.strip()]
+        
+        if urls:
+            st.write(f"Downloading {len(urls)} file(s)...")
+            download_progress = st.progress(0)
+            
+            downloaded_files = []
+            
+            for idx, url in enumerate(urls):
+                with st.spinner(f"Downloading from {url}..."):
+                    success, file_path, error = download_file_with_wget(url)
+                    
+                    if success:
+                        st.success(f"✅ Downloaded: {os.path.basename(file_path)}")
+                        downloaded_files.append(file_path)
+                    else:
+                        st.error(f"❌ Failed to download {url}: {error}")
+                
+                download_progress.progress((idx + 1) / len(urls))
+            
+            if downloaded_files:
+                st.info(f"Successfully downloaded {len(downloaded_files)} file(s). You can now use them in the processing below.")
+
+st.divider()
 
 # Allow user to upload up to 10 video files
 uploaded_videos = st.file_uploader(
