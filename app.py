@@ -3,6 +3,7 @@ import os
 import subprocess
 import tempfile
 import urllib.parse
+import requests
 from main import combine_video_with_audio_control
 
 st.set_page_config(page_title="Video + Audio Combiner", layout="centered")
@@ -17,7 +18,7 @@ if 'processing_complete' not in st.session_state:
 
 def download_file_with_wget(url, output_path=None):
     """
-    Download a file using wget via subprocess
+    Download a file using wget via subprocess, with fallback to Python requests
     
     Args:
         url (str): URL of the file to download
@@ -26,6 +27,7 @@ def download_file_with_wget(url, output_path=None):
     Returns:
         tuple: (success: bool, file_path: str, error_message: str)
     """
+    # First try wget if available
     try:
         # Create temp directory if no output path specified
         if output_path is None:
@@ -66,9 +68,64 @@ def download_file_with_wget(url, output_path=None):
     except subprocess.TimeoutExpired:
         return False, None, "Download timeout - file may be too large or connection too slow"
     except FileNotFoundError:
-        return False, None, "wget command not found. Please install wget on your system."
+        # wget not found, fall back to Python requests
+        return download_file_with_requests(url, output_path)
     except Exception as e:
         return False, None, f"Download error: {str(e)}"
+
+def download_file_with_requests(url, output_path=None):
+    """
+    Download a file using Python requests library (fallback method)
+    
+    Args:
+        url (str): URL of the file to download
+        output_path (str, optional): Path where to save the file
+    
+    Returns:
+        tuple: (success: bool, file_path: str, error_message: str)
+    """
+    try:
+        # Create temp directory if no output path specified
+        if output_path is None:
+            # Extract filename from URL
+            parsed_url = urllib.parse.urlparse(url)
+            filename = os.path.basename(parsed_url.path)
+            if not filename or '.' not in filename:
+                filename = "downloaded_file"
+            
+            # Create temp file
+            temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=f"_{filename}")
+            output_path = temp_file.name
+            temp_file.close()
+        
+        # Download with requests
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        response = requests.get(
+            url, 
+            headers=headers,
+            timeout=120,  # 2 minute timeout
+            stream=True,  # Stream download for large files
+            verify=False  # Skip SSL verification
+        )
+        response.raise_for_status()
+        
+        # Write file in chunks
+        with open(output_path, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+        
+        return True, output_path, ""
+        
+    except requests.exceptions.Timeout:
+        return False, None, "Download timeout - file may be too large or connection too slow"
+    except requests.exceptions.RequestException as e:
+        return False, None, f"Download error: {str(e)}"
+    except Exception as e:
+        return False, None, f"Unexpected error: {str(e)}"
 
 # Add URL input section
 st.header("Download Files from URLs")
