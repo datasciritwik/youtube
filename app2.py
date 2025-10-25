@@ -6,29 +6,29 @@ import contextlib
 import traceback
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title=“Jupyter-like Notebook”, layout=“wide”)
+st.set_page_config(page_title="Jupyter-like Notebook", layout="wide")
 
 # Initialize session state
 
-if ‘cells’ not in st.session_state:
-st.session_state.cells = [{‘code’: ‘’, ‘output’: ‘’, ‘error’: ‘’}]
-if ‘namespace’ not in st.session_state:
+if 'cells' not in st.session_state:
+st.session_state.cells = [{'code': '', 'output': '', 'error': ''}]
+if 'namespace' not in st.session_state:
 st.session_state.namespace = {}
-if ‘installed_packages’ not in st.session_state:
+if 'installed_packages' not in st.session_state:
 st.session_state.installed_packages = []
 
 def install_package(package_name):
-“”“Install a package using pip”””
+"""Install a package using pip"""
 try:
-subprocess.check_call([sys.executable, “-m”, “pip”, “install”, package_name])
-return True, f”Successfully installed {package_name}”
+subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
+return True, f"Successfully installed {package_name}"
 except subprocess.CalledProcessError as e:
-return False, f”Failed to install {package_name}: {str(e)}”
+return False, f"Failed to install {package_name}: {str(e)}"
 
 def execute_code(code, namespace):
-“”“Execute code and capture output, errors, and plots”””
+"""Execute code and capture output, errors, and plots"""
 output = StringIO()
-error = ‘’
+error = ''
 
 ```
 # Check for pip install commands
@@ -76,13 +76,13 @@ return output.getvalue(), error
 
 # Title and description
 
-st.title(“🎯 Jupyter-like Notebook in Streamlit”)
-st.markdown(“Execute Python code with persistent variables and install packages on the fly!”)
+st.title("🎯 Jupyter-like Notebook in Streamlit")
+st.markdown("Execute Python code with persistent variables and install packages on the fly!")
 
 # Sidebar controls
 
 with st.sidebar:
-st.header(“Controls”)
+st.header("Controls")
 
 ```
 # Package installation section
@@ -185,8 +185,8 @@ st.markdown("---")
 
 # Quick examples
 
-with st.expander(“📚 Example Code Snippets”):
-st.markdown(”””
+with st.expander("📚 Example Code Snippets"):
+st.markdown("""
 **Install packages directly in cells:**
 
 ```
