@@ -229,7 +229,7 @@ with st.expander("📚 Example Code Snippets"):
     ```
     """)
     
-st.markdown(```mermaid
+st.markdown("""```mermaid
 flowchart TD
     A[User Inputs Website URL] --> B[Agent Initialization]
     B --> C[Reconnaissance Phase]
@@ -257,4 +257,4 @@ flowchart TD
         J
         K
     end
-    ```)
+    ```""")
