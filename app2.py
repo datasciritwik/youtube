@@ -259,7 +259,8 @@ code = """
         A --> B --> C
     """
 
-if st.session_state.inpcode is not None:
-    mermaid(st.session_state.inpcode)
-else:
-    mermaid(code)
+if st.button("Show"):
+    if st.session_state.inpcode is not None:
+        mermaid(st.session_state.inpcode)
+    else:
+        mermaid(code)
