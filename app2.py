@@ -229,7 +229,8 @@ with st.expander("📚 Example Code Snippets"):
     ```
     """)
     
-st.markdown("""mermaidflowchart TD
+st.markdown(```mermaid
+flowchart TD
     A[User Inputs Website URL] --> B[Agent Initialization]
     B --> C[Reconnaissance Phase]
     C -->|Fetches and scans| D[Web Scanner Module]
@@ -255,4 +256,5 @@ st.markdown("""mermaidflowchart TD
         A
         J
         K
-    end""")
+    end
+    ```)
