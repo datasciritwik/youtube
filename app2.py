@@ -234,6 +234,9 @@ if "svg_height" not in st.session_state:
     st.session_state["svg_height"] = 200
 if "inpcode" not in st.session_state:
     st.session_state.inpcode = None
+
+vheight = st.number_input("Height", min=1, value=800)
+st.session_state.svg_height=vheight
 inpcode = st.text_area("Mermaid diagram")
 st.session_state.inpcode = f"""{inpcode}"""
 def mermaid(code: str) -> None:
