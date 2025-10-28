@@ -5,6 +5,7 @@ from io import StringIO
 import contextlib
 import traceback
 import matplotlib.pyplot as plt
+from streamlit.components.v1 import html
 
 st.set_page_config(page_title="Jupyter-like Notebook", layout="wide")
 
@@ -229,9 +230,10 @@ with st.expander("📚 Example Code Snippets"):
     ```
     """)
     
-
+if "svg_height" not in st.session_state:
+    st.session_state["svg_height"] = 200
 def mermaid(code: str) -> None:
-    components.html(
+    html(
         f"""
         <pre class="mermaid">
             {code}
@@ -241,10 +243,11 @@ def mermaid(code: str) -> None:
             import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
             mermaid.initialize({{ startOnLoad: true }});
         </script>
-        """
+        """,
+        height=st.session_state["svg_height"] + 50,
     )
     
-mermaid("""mermaid
+code = """mermaid
 flowchart TD
     A[User Inputs Website URL] --> B[Agent Initialization]
     B --> C[Reconnaissance Phase]
@@ -272,4 +275,5 @@ flowchart TD
         J
         K
     end
-    """)
+    """
+mermaid(code)
