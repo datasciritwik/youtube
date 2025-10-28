@@ -228,3 +228,31 @@ with st.expander("📚 Example Code Snippets"):
     print(soup.title.text)
     ```
     """)
+    
+st.markdown("""mermaidflowchart TD
+    A[User Inputs Website URL] --> B[Agent Initialization]
+    B --> C[Reconnaissance Phase]
+    C -->|Fetches and scans| D[Web Scanner Module]
+    C -->|Collects metadata, headers, endpoints| E[Data Collector]
+    D --> F[Vulnerability Detection Engine]
+    E --> F
+    F -->|Static + Dynamic tests| G[AI Analysis Layer]
+    G -->|Ranks vulnerabilities by risk| H[Risk Scoring System]
+    H --> I[Recommendation Generator]
+    I -->|Auto-suggests mitigation steps| J[Comprehensive Security Report]
+    J --> K[Frontend Dashboard / PDF Export]
+
+    subgraph Backend
+        D
+        E
+        F
+        G
+        H
+        I
+    end
+
+    subgraph Frontend
+        A
+        J
+        K
+    end""")
