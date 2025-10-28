@@ -229,7 +229,22 @@ with st.expander("📚 Example Code Snippets"):
     ```
     """)
     
-st.markdown("""```mermaid
+
+def mermaid(code: str) -> None:
+    components.html(
+        f"""
+        <pre class="mermaid">
+            {code}
+        </pre>
+
+        <script type="module">
+            import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+            mermaid.initialize({{ startOnLoad: true }});
+        </script>
+        """
+    )
+    
+mermaid("""mermaid
 flowchart TD
     A[User Inputs Website URL] --> B[Agent Initialization]
     B --> C[Reconnaissance Phase]
@@ -257,4 +272,4 @@ flowchart TD
         J
         K
     end
-    ```""")
+    """)
