@@ -232,6 +232,10 @@ with st.expander("📚 Example Code Snippets"):
     
 if "svg_height" not in st.session_state:
     st.session_state["svg_height"] = 200
+if "inpcode" not in st.session_state:
+    st.session_state.inpcode = None
+inpcode = st.text_input()
+st.session_state.inpcode = f"""{inpcode}"""
 def mermaid(code: str) -> None:
     html(
         f"""
@@ -248,32 +252,15 @@ def mermaid(code: str) -> None:
     )
     
 code = """
-flowchart TD
-    A[User Inputs Website URL] --> B[Agent Initialization]
-    B --> C[Reconnaissance Phase]
-    C -->|Fetches and scans| D[Web Scanner Module]
-    C -->|Collects metadata, headers, endpoints| E[Data Collector]
-    D --> F[Vulnerability Detection Engine]
-    E --> F
-    F -->|Static + Dynamic tests| G[AI Analysis Layer]
-    G -->|Ranks vulnerabilities by risk| H[Risk Scoring System]
-    H --> I[Recommendation Generator]
-    I -->|Auto-suggests mitigation steps| J[Comprehensive Security Report]
-    J --> K[Frontend Dashboard / PDF Export]
-
-    subgraph Backend
-        D
-        E
-        F
-        G
-        H
-        I
-    end
-
-    subgraph Frontend
-        A
-        J
-        K
-    end
+    graph TD
+        A[Christmas] -->|Get money| B(Go shopping)
+        B --> C{Let me think}
+        C -->|One| D[Laptop]
+        C -->|Two| E[iPhone]
+        C -->|Three| F[fa:fa-car Car]
     """
-mermaid(code)
+
+if st.session_state.inpcode is not None:
+    mermaid(st.session_state.inpcode)
+else:
+    mermaid(code)
