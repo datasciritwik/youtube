@@ -247,7 +247,7 @@ def mermaid(code: str) -> None:
         height=st.session_state["svg_height"] + 50,
     )
     
-code = """mermaid
+code = """
 flowchart TD
     A[User Inputs Website URL] --> B[Agent Initialization]
     B --> C[Reconnaissance Phase]
