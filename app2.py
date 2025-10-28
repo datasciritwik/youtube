@@ -244,7 +244,7 @@ def mermaid(code: str) -> None:
             mermaid.initialize({{ startOnLoad: true }});
         </script>
         """,
-        
+        height=st.session_state["svg_height"] + 800,
     )
     
 code = """
