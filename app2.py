@@ -252,12 +252,8 @@ def mermaid(code: str) -> None:
     )
     
 code = """
-    graph TD
-        A[Christmas] -->|Get money| B[Go shopping]
-        B --> C{Let me think}
-        C -->|One| D[Laptop]
-        C -->|Two| E[iPhone]
-        C -->|Three| F[fa:fa-car Car]
+    graph LR
+        A --> B --> C
     """
 
 if st.session_state.inpcode is not None:
